@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_learning/main.dart';
 
+// 1. Provider:
+
 // 1) 1st way to read provider in StatelessWidget:
 // class HomePage extends ConsumerWidget {
 //   const HomePage({super.key});
@@ -35,21 +37,58 @@ import 'package:riverpod_learning/main.dart';
 // }
 
 // Method to read Provider in StatefulWidget:
-class HomePage extends ConsumerStatefulWidget {
+// class HomePage extends ConsumerStatefulWidget {
+//   const HomePage({super.key});
+
+//   @override
+//   ConsumerState<HomePage> createState() => _HomePageState();
+// }
+
+// class _HomePageState extends ConsumerState<HomePage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     final name = ref.watch(nameProvider);
+//     return Scaffold(
+//       body: Center(
+//         child: Text(name),
+//       ),
+//     );
+//   }
+// }
+
+// 2. StateProvider:
+
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends ConsumerState<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    final name = ref.watch(nameProvider);
-    return Scaffold(
-      body: Center(
-        child: Text(name),
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(fetchUserProvider).when(
+      data: (data) {
+        return SafeArea(
+          child: Scaffold(
+            body: Center(
+              child: Column(
+                children: [
+                  Text(data.name),
+                  Text(data.email),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+      error: (error, stackTrace) {
+        return Scaffold(
+            body: Center(
+          child: Text(
+            error.toString(),
+          ),
+        ));
+      },
+      loading: () {
+        return const CircularProgressIndicator();
+      },
     );
   }
 }
